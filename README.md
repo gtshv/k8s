@@ -1,1 +1,1 @@
-# k8s
+# Installing, upgrading and configuration of Kubernetes
