@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-lab
+  namespace: test-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-lab
+  template:
+    metadata:
+      labels:
+        app: test-lab
+    spec:
+      volumes:
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: test-lab-pvc
+      containers:
+        - name: test-lab
+          image: 10.185.4.70:30080/jenkins_masters/jenkins_master_2.392
+          ports:
+            - name: http-port
+              containerPort: 8080
+              protocol: TCP
+            - name: jnlp-port
+              containerPort: 50000
+              protocol: TCP
+          env:
+            - name: JENKINS_OPTS
+              value: ' --sessionTimeout=3600 -Djenkins.InitReactorRunner.concurrency=3 --debug=5 --logfile=/var/jenkins_home/jenkins.log'
+          resources:
+            requests: 
+              cpu: '1'
+              memory: 4Gi
+          volumeMounts:
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        appsNode: possible
+      securityContext: {}
+      imagePullSecrets:
+        - name: regcred
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
