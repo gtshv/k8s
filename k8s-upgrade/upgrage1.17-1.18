@@ -1,0 +1,36 @@
+==========================
+commands on the k8s MASTER
+==========================
+sudo apt-mark unhold kubeadm && sudo apt-get update && sudo apt-get install -y kubeadm=1.18.20-00 && sudo apt-mark hold kubeadm
+sudo kubeadm upgrade plan
+sudo kubeadm upgrade apply v1.18.20 -y
+sudo apt-mark unhold kubelet && sudo apt-get update && sudo apt-get install -y kubelet=1.18.20-00 && sudo apt-mark hold kubelet
+sudo systemctl restart kubelet
+
+==========================
+commands on the k8s MASTER
+==========================
+sudo kubectl drain <worker> --ignore-daemonsets
+
+=====================
+commands on k8s SLAVE
+=====================
+sudo apt-mark unhold kubelet && sudo apt-get update && sudo apt-get install -y kubelet=1.18.20-00 && sudo apt-mark hold kubelet
+sudo systemctl restart kubelet
+sudo apt-mark unhold kubeadm && sudo apt-get update && sudo apt-get install -y kubeadm=1.18.20-00 && sudo apt-mark hold kubeadm
+sudo kubeadm upgrade node
+
+==========================
+commands on the k8s MASTER
+==========================
+sudo kubectl uncordon <worker>
+
+
+=============================
+Ubuntu 18.04 to 20.04 upgrade
+=============================
+vi /etc/apt/sources.list.d/kubernetes.list # comment the k8s repo and save
+vi /etc/apt/sources.list.d/docker.list # comment the docker repo and save
+
+sudo apt update
+sudo do-release-upgrade
