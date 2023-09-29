@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-lab-agent
+  namespace: test-lab
+spec:
+  ports:
+    - name: agent
+      protocol: TCP
+      port: 31044
+      targetPort: 31044
+      nodePort: 31044
+  selector:
+    app: test-lab
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
